@@ -7,9 +7,8 @@ struct Node
 };
 int main()
 {
-    Node ax,bx;
-    cout<<ax.value<<endl;
-    ax.value = 1;
-    cout<<ax.value<<endl;
+    int a,b;
+    a = 9;
+    cout<<a/4<<endl;
     return 0;
 }
