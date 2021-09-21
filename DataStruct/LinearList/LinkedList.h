@@ -1,6 +1,9 @@
 #pragma once
 #include <iostream>
 using namespace std;
+//define
+#define ERROR -1   //这种方法也有问题，define并未指定数据类型
+#define OK 1
 /**借鉴一下别人的写法
  * Definition for singly-linked list.
  * struct ListNode {
@@ -28,9 +31,10 @@ public:
     ElemType Get(int i);            //按位查找，返回值
     int Locate(ElemType x);         //按值查找，返回位置
     void Insert(int i, ElemType x); //插入x成为第i个元素
-    void Delete(int i);             //删除第i个元素
+    void Erase(int i);             //删除第i个元素
     void PrintList();               //遍历打印整个表
-    void Empty();
+    bool Empty();
+    void Reverse();
 
 private:
     Node<ElemType> *first; //头指针
@@ -42,6 +46,8 @@ LinkList<ElemType>::LinkList(ElemType a[], int n)
 {
     Node<ElemType> *Fir = NULL; //注意不要写成野指针了
     Fir = new Node<ElemType>;   //返回的是不是指针       如果new失败了怎么办呢
+    if(Fir==NULL)
+    throw "fail to ask space";
     first = Fir;                //命名要注意什么？
     length = n;
     for (int i = 0; i < n; i++)
@@ -103,8 +109,8 @@ ElemType LinkList<ElemType>::Get(int i)
 template <class ElemType>
 void LinkList<ElemType>::Insert(int i, ElemType x)
 {
-    if (i < 1 || i > length) //只能插入不许追加   该不该允许追加，不应该因为操作者使用时还需要先get到位置比较麻烦
-        throw "参数非法";
+    if (i < 1 || i > length+1) //只能插入不许追加   该不该允许追加，不应该因为操作者使用时还需要先get到位置比较麻烦
+        throw "invalid input";
     length++;
     Node<ElemType> *Fir = first;
     Node<ElemType> *now = NULL;
@@ -112,6 +118,8 @@ void LinkList<ElemType>::Insert(int i, ElemType x)
     now->data = x;
     if (i == 1) //第一个的特殊性,需要改变first
     {
+        Node<ElemType> *fina = NULL;
+        cout<<fina<<endl;
         now->next = first;
         first = now;
         return;
@@ -126,10 +134,10 @@ void LinkList<ElemType>::Insert(int i, ElemType x)
 }
 
 template <class ElemType>
-void LinkList<ElemType>::Delete(int i)
+void LinkList<ElemType>::Erase(int i)
 {
     if (i < 1 || i > length)
-        throw "参数非法"; //如果throw发现错误了怎么办？ 捕捉到错误后，后面的代码便不再执行
+        throw "invalid input"; //如果throw发现错误了怎么办？ 捕捉到错误后，后面的代码便不再执行
     Node<ElemType> *now = first;
     Node<ElemType> *wait_del = NULL;
     if (i == 1)
@@ -154,7 +162,9 @@ void LinkList<ElemType>::Delete(int i)
     }
     wait_del = now->next;
     now = wait_del->next;
+    length--;
     delete wait_del; //删除指针还是删除指针所指的对象   对象无法访问是不是代表对象已经被删除了
+    now->next = NULL;
     return;
 }
 
@@ -172,12 +182,33 @@ void LinkList<ElemType>::PrintList()
 }
 
 template <class ElemType>
-void LinkList<ElemType>::Empty()
+bool LinkList<ElemType>::Empty()
 {
     if (length == 0)
-        cout << "此表为空" << endl;
+        return true;
     else
-        cout << "此表非空" << endl;
+        return false;
+}
+
+template <class ElemType>
+void LinkList<ElemType>::Reverse()
+{
+    if (!length)
+       throw "invalid  input!";
+    if(length==1)
+       return;
+    Node<ElemType> *now=first, *late =nullptr, *next = nullptr;
+    for(int i=0;i<length-1;i++)
+    {
+       next = now->next;
+       now->next = late;
+       late = now;
+       now = next;
+    }
+    now->next = late;
+    first = now;
+    return ;
+
 }
 
 template <class ElemType>
